@@ -1,9 +1,21 @@
+# Based on an example from https://www.dropbox.com/developers/reference/webhooks
 import Dropbox
-from flask import Flask
+from flask import Flask, Response
+from flask import request, abort
 from redis import StrictRedis
 
+from dotenv import load_dotenv
+load_dotenv()
+
+import os
+REDISHOST = os.getenv("REDISHOST")
+SECRETKEY = os.getenv("SECRETKEY")
+ZOTEROKEY = os.getenv("ZOTEROKEY")
+PDFINCOMING = os.getenv("PDFINCOMING")
+PDFOUTGOING = os.getenv("PDFOUTGOING")
+
 app = Flask(__name__)
-db  = StrictRedis(host='localhost', port=6379, db=0)
+db  = StrictRedis(host=REDISHOST, port=6379, db=0)
 
 @app.route('/webhook', methods=['GET'])
 def verify():
@@ -15,12 +27,11 @@ def verify():
 from hashlib import sha256
 import hmac
 import threading
-
 @app.route('/webhook', methods=['POST'])
 def webhook():
     # Make sure this is a valid request from Dropbox
     signature = request.headers.get('X-Dropbox-Signature')
-    if not hmac.compare_digest(signature, hmac.new(APP_SECRET, request.data, sha256).hexdigest()):
+    if not hmac.compare_digest(signature, hmac.new(SECRETKEY, request.data, sha256).hexdigest()):
         abort(403)
 
     for account in json.loads(request.data)['list_folder']['accounts']:
@@ -50,7 +61,7 @@ def process_user(account):
             # Ignore deleted files, folders, and non-markdown files
             if (isinstance(entry, DeletedMetadata) or
                 isinstance(entry, FolderMetadata) or
-                not entry.path_lower.endswith('.md')):
+                not entry.path_lower.endswith('.pdf')):
                 continue
 
             # Convert to Markdown and store as <basename>.html
