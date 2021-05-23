@@ -22,7 +22,7 @@ if __name__ == '__main__':
     else:
       print("[!] Couldn't find DOI")
       exit(1)
-  else:
-    print("""\
+
+  print("""\
 reader [PDF file]\
-          """)
+        """)
