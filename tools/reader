@@ -1,5 +1,5 @@
 #!env python3
-import re, sys
+import re
 regex = re.compile("(?P<doi>10\.\d{4,9}/[-._;()/:A-Z0-9]+)", re.IGNORECASE)
 
 import fitz
