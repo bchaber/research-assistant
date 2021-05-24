@@ -3,6 +3,9 @@ from dropbox import Dropbox
 from flask import Response
 from flask import request, abort
 
+import os
+SECRETKEY = os.getenv("SECRETKEY")
+
 @app.route('/webhook', methods=['GET'])
 def verify():
     resp = Response(request.args.get('challenge'))
