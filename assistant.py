@@ -18,6 +18,18 @@ from zotero_integration  import zot
 app.register_blueprint(dbx)
 app.register_blueprint(zot)
 
+@app.route("/")
+def home():
+  return """
+<!doctype html>
+<html lang="en">
+  <form action="/new-citation" method="POST">
+  <ul>
+  <li><textarea placeholder="Find me a paper cited as..." cols="80" rows="3" name="citation"></textarea></li>
+  <li><input type="submit" value="find"></li>
+  </ul>
+"""
+
 from tools import reader, finder
 @app.route("/new-pdf/<path:filename>", methods=["GET"])
 def new_pdf(filename):
