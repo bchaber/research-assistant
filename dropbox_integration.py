@@ -1,3 +1,5 @@
+from database import db
+
 # Based on an example from https://www.dropbox.com/developers/reference/webhooks
 from dropbox import Dropbox
 from flask import Blueprint, Response

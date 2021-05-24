@@ -1,20 +1,15 @@
 from flask import Flask 
-from redis import StrictRedis
-
 from dotenv import load_dotenv
 load_dotenv()
 
 import os, random, string
-REDISHOST = os.getenv("REDISHOST")
-REDISPORT = os.getenv("REDISPORT")
-REDISAUTH = os.getenv("REDISAUTH")
 SESSIONKEY  = os.getenv("SESSIONKEY")
 PDFINCOMING = os.getenv("PDFINCOMING")
 PDFOUTGOING = os.getenv("PDFOUTGOING")
 
 app = Flask(__name__)
-db  = StrictRedis(host=REDISHOST, port=REDISPORT, password=REDISAUTH, db=0)
 
+from database import db
 from dropbox_integration import dbx
 from zotero_integration  import zot
 app.register_blueprint(dbx)
