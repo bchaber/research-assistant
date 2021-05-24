@@ -1,0 +1,15 @@
+#!/bin/bash
+host="http://localhost:5000"
+event=$1
+arg=$2
+case $event in
+new-file) 
+	echo "Send event new-file: $arg"
+	echo curl "$host/new-file/$arg"
+	;;
+new-citation)
+	echo "Send event new-citation: $arg"
+	echo curl -d \"citation=$arg\" "$host/new-citation"
+	;;
+*) echo "Unknown event "$event", try: new-file, new-citation";;
+esac
