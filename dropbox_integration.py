@@ -54,10 +54,10 @@ def process_user(account):
                 not entry.path_lower.endswith('.pdf')):
                 continue
 
-            # Convert to Markdown and store as <basename>.html
-            _, resp = dropbox.files_download(entry.path_lower)
-            html = markdown(resp.content)
-            dropbox.files_upload(html, entry.path_lower[:-3] + '.html', mode=WriteMode('overwrite'))
+            incoming = entry.path_lower
+            _, resp = dropbox.files_download(incoming)
+            outgoing = process_pdf(incoming)
+            dropbox.files_move(incoming, outgoing, autorename=True)
 
         # Update cursor
         cursor = result.cursor
@@ -65,3 +65,21 @@ def process_user(account):
 
         # Repeat only if there's more to do
         has_more = result.has_more
+
+def title(metadata):
+  return metadata.get("title", "")
+def authors(metadata):
+  return ' and '.join([author.get("family") + ", " + author.get("given") for author in metadata.get("author", [])[:3]])
+
+def process_pdf(filename):
+  print("Processing new PDF: " + filename)
+  doi = reader.extract_doi('/' + filename)
+  if doi is None:
+    return "No DOI found in the provided file"
+  metadata, bibitem = finder.find_metadata(doi)
+  if metadata is None:
+    return "Error while finding metadata"
+  title = metadata.get("title")
+  authors = metadata.get("author")
+  
+  return authors(metadata) + " - " + title(metadata) + ".pdf"

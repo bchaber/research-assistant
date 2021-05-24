@@ -1,4 +1,4 @@
-from flask import Flask, request
+from flask import Flask 
 from redis import StrictRedis
 
 from dotenv import load_dotenv
@@ -18,17 +18,15 @@ from zotero_integration  import zot
 app.register_blueprint(dbx)
 app.register_blueprint(zot)
 
+from flask import request, render_template
 @app.route("/")
 def home():
-  return """
-<!doctype html>
-<html lang="en">
-  <form action="/new-citation" method="POST">
-  <ul>
-  <li><textarea placeholder="Find me a paper cited as..." cols="80" rows="3" name="citation"></textarea></li>
-  <li><input type="submit" value="find"></li>
-  </ul>
-"""
+  return render_template("home.html")
+
+def title(metadata):
+  return metadata.get("title", "")
+def authors(metadata):
+  return ' and '.join([author.get("family") + ", " + author.get("given") for author in metadata.get("author", [])[:3]])
 
 from tools import reader, finder
 @app.route("/new-pdf/<path:filename>", methods=["GET"])
@@ -40,7 +38,8 @@ def new_pdf(filename):
   metadata, bibitem = finder.find_metadata(doi)
   if metadata is None:
     return "Error while finding metadata"
-  return bibitem
+
+  return authors(metadata) + " - " + title(metadata) + ".pdf"
 
 @app.route("/new-citation", methods=["POST"])
 def new_citation():
@@ -54,6 +53,7 @@ def new_citation():
   metadata, bibitem = finder.find_metadata(doi)
   if metadata is None:
     return "Error while finding metadata"
+
   return bibitem
 
 if __name__ == "__main__":
