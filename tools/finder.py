@@ -36,13 +36,13 @@ if __name__ == '__main__':
   if len(argv) > 1:
     command = argv[1]
     if command == 'doi' and len(argv) > 2:
-      metadata, citation = find_metadata(argv[2])
-      print(citation)
+      metadata, bibitem = find_metadata(argv[2])
+      print(bibitem)
       exit(0)
     if command == 'bib' and len(argv) > 2:
       doi = find_doi(argv[2])
-      metadata, citation = find_metadata(doi)
-      print(citation)
+      metadata, bibitem = find_metadata(doi)
+      print(bibitem)
       exit(0)
 
   print("""\
