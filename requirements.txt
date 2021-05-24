@@ -7,3 +7,4 @@ lxml==4.6.3
 PyMuPDF==1.18.13
 requests==2.25.1
 urllib3==1.26.4
+python-dotenv==0.17.1
