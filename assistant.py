@@ -6,12 +6,14 @@ load_dotenv()
 
 import os, random, string
 REDISHOST = os.getenv("REDISHOST")
+REDISPORT = os.getenv("REDISPORT")
+REDISAUTH = os.getenv("REDISAUTH")
+SESSIONKEY  = os.getenv("SESSIONKEY")
 PDFINCOMING = os.getenv("PDFINCOMING")
 PDFOUTGOING = os.getenv("PDFOUTGOING")
-SESSIONKEY  = os.getenv("SESSIONKEY")
 
 app = Flask(__name__)
-db  = StrictRedis(host=REDISHOST, port=6379, db=0)
+db  = StrictRedis(host=REDISHOST, port=REDISPORT, password=REDISAUTH, db=0)
 
 from dropbox_integration import dbx
 from zotero_integration  import zot
