@@ -4,7 +4,7 @@ from flask import Blueprint, Response
 from flask import request, abort
 
 import os
-SECRETKEY = os.getenv("SECRETKEY")
+APPSECRET = os.getenv("APPSECRET")
 
 dbx = Blueprint("dropbox", __name__, template_folder="templates")
 @dbx.route('/webhook', methods=['GET'])
@@ -21,7 +21,7 @@ import threading
 def webhook():
     # Make sure this is a valid request from Dropbox
     signature = request.headers.get('X-Dropbox-Signature')
-    if not hmac.compare_digest(signature, hmac.new(SECRETKEY, request.data, sha256).hexdigest()):
+    if not hmac.compare_digest(signature, hmac.new(bytes(APPSECRET), request.data, sha256).hexdigest()):
         abort(403)
 
     for account in json.loads(request.data)['list_folder']['accounts']:
@@ -81,5 +81,5 @@ def process_pdf(filename):
     return "Error while finding metadata"
   title = metadata.get("title")
   authors = metadata.get("author")
-  
+
   return authors(metadata) + " - " + title(metadata) + ".pdf"
