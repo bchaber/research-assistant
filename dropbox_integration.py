@@ -45,7 +45,7 @@ def process_user(account):
 
     while has_more:
         if cursor is None:
-            result = dropbox.files_list_folder(path='')
+            result = dropbox.files_list_folder(path='/incoming')
         else:
             result = dropbox.files_list_folder_continue(cursor)
 
@@ -60,8 +60,11 @@ def process_user(account):
             incoming = entry.path_lower
             _, resp = dropbox.files_download(incoming)
             outgoing = process_pdf(incoming, resp.content)
-            print("[>] moving " + incoming + " to " + outgoing)
-            dropbox.files_move(incoming, outgoing, autorename=True)
+            if incoming != outgoing:
+              print("[>] moving " + incoming + " to " + outgoing)
+              dropbox.files_move(incoming, outgoing, autorename=True)
+            else:
+              print("[_] no change for " + incoming)
 
         # Update cursor
         cursor = result.cursor
@@ -72,10 +75,10 @@ def process_user(account):
 
 def title(metadata):
   return metadata.get("title", "")
+  
 def authors(metadata):
   return ' and '.join([author.get("family") + ", " + author.get("given") for author in metadata.get("author", [])[:3]])
 
-import random
 from tools import reader, finder
 def process_pdf(filename, pdfstream):
   print("[*] processing " + filename)
@@ -85,4 +88,4 @@ def process_pdf(filename, pdfstream):
   metadata, bibitem = finder.find_metadata(doi)
   if metadata is None:
     return filename
-  return "/outgoing/" + authors(metadata) + " - " + title(metadata) + ".pdf"
+  return "/outgoing/" + title(metadata) + " - " + authors(metadata) + ".pdf"

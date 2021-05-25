@@ -36,7 +36,7 @@ def new_pdf(filename):
   if metadata is None:
     return "[err] error while finding metadata"
 
-  return authors(metadata) + " - " + title(metadata) + ".pdf"
+  return title(metadata) + " - " + authors(metadata) + ".pdf"
 
 @app.route("/new-citation", methods=["POST"])
 def new_citation():
