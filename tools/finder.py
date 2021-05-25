@@ -14,9 +14,9 @@ def find_metadata(doi):
 
   return metadata, response.text
 
-from requests.utils import requote_uri
+from urllib.parse import quote
 def find_doi(citation):
-  citation = requote_uri(citation)
+  citation = quote(citation)
   response = requests.get(f"https://api.crossref.org/works?query.bibliographic={citation}&rows=1")
   if response.status_code != 200:
     return None

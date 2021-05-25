@@ -1,4 +1,4 @@
 #!env python3
 from sys import argv
-from requests.utils import requote_uri
-print(requote_uri(' '.join(argv[1:]))) 
+from urllib.parse import quote
+print(quote(' '.join(argv[1:]))) 

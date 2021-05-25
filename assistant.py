@@ -25,10 +25,11 @@ def title(metadata):
 def authors(metadata):
   return ' and '.join([author.get("family") + ", " + author.get("given") for author in metadata.get("author", [])[:3]])
 
+from urllib.parse import quote, unquote
 from tools import reader, finder
 @app.route("/new-pdf/<path:filename>", methods=["GET"])
 def new_pdf(filename):
-  incoming = '/' + filename
+  incoming = '/' + unquote(filename)
   print("[*] processing new PDF file: " + incoming)
   doi = reader.extract_doi_from_file(incoming)
   if doi is None:
