@@ -1,4 +1,6 @@
+from rq import Queue, Worker, Connection
 from database import db
+queue = Queue(connection=db)
 
 # Based on an example from https://www.dropbox.com/developers/reference/webhooks
 from dropbox import Dropbox
@@ -36,10 +38,8 @@ def webhook():
 
 from dropbox.files import DeletedMetadata, FolderMetadata
 def process_user(account):
-    # OAuth token for the user
-    token = db.hget('tokens', account)
-    # cursor for the user (None the first time)
-    cursor = db.hget('cursors', account)
+    token = db.hget('tokens', account).decode()
+    cursor = None #db.hget('cursors', account).decode()
     dropbox = Dropbox(token)
     has_more = True
 
@@ -59,12 +59,7 @@ def process_user(account):
 
             incoming = entry.path_lower
             _, resp = dropbox.files_download(incoming)
-            outgoing = process_pdf(incoming, resp.content)
-            if incoming != outgoing:
-              print("[>] moving " + incoming + " to " + outgoing)
-              dropbox.files_move(incoming, outgoing, autorename=True)
-            else:
-              print("[_] no change for " + incoming)
+            queue.enqueue("__main__.parse_pdf_stream", args=(incoming, resp.content, dropbox))
 
         # Update cursor
         cursor = result.cursor
@@ -72,20 +67,3 @@ def process_user(account):
 
         # Repeat only if there's more to do
         has_more = result.has_more
-
-def title(metadata):
-  return metadata.get("title", "")
-  
-def authors(metadata):
-  return ' and '.join([author.get("family") + ", " + author.get("given") for author in metadata.get("author", [])[:3]])
-
-from tools import reader, finder
-def process_pdf(filename, pdfstream):
-  print("[*] processing " + filename)
-  doi = reader.extract_doi_from_stream(pdfstream)
-  if doi is None:
-    return filename
-  metadata, bibitem = finder.find_metadata(doi)
-  if metadata is None:
-    return filename
-  return "/outgoing/" + title(metadata) + " - " + authors(metadata) + ".pdf"
