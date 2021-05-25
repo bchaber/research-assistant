@@ -28,15 +28,19 @@ def authors(metadata):
 from tools import reader, finder
 @app.route("/new-pdf/<path:filename>", methods=["GET"])
 def new_pdf(filename):
-  print("[*] processing new PDF file: " + filename)
-  doi = reader.extract_doi_from_file('/' + filename)
+  incoming = '/' + filename
+  print("[*] processing new PDF file: " + incoming)
+  doi = reader.extract_doi_from_file(incoming)
   if doi is None:
     return "[err] no DOI found in the provided file"
   metadata, bibitem = finder.find_metadata(doi)
   if metadata is None:
     return "[err] error while finding metadata"
 
-  return title(metadata) + " - " + authors(metadata) + ".pdf"
+  outgoing = PDFOUTGOING + '/' + title(metadata) + " - " + authors(metadata) + ".pdf"
+  print("[>] moving " + incoming + " to " + outgoing)
+  os.rename(incoming, outgoing)
+  return outgoing
 
 @app.route("/new-citation", methods=["POST"])
 def new_citation():
