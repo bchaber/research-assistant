@@ -23,8 +23,8 @@ import threading
 def webhook():
     # Make sure this is a valid request from Dropbox
     signature = request.headers.get('X-Dropbox-Signature')
-    #if not hmac.compare_digest(signature, hmac.new(APPSECRET, request.data, sha256).hexdigest()):
-    #    abort(403)
+    if not hmac.compare_digest(signature, hmac.new(APPSECRET, request.data, sha256).hexdigest()):
+        abort(403)
 
     for account in json.loads(request.data)['list_folder']['accounts']:
         # We need to respond quickly to the webhook request, so we do the
@@ -85,5 +85,4 @@ def process_pdf(filename, pdfstream):
   metadata, bibitem = finder.find_metadata(doi)
   if metadata is None:
     return filename
-  return "/outgoing/" + random.choice('abcdef') + ".pdf"
-  #return authors(metadata) + " - " + title(metadata) + ".pdf"
+  return "/outgoing/" + authors(metadata) + " - " + title(metadata) + ".pdf"

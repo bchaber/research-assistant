@@ -15,7 +15,7 @@ from zotero_integration  import zot
 app.register_blueprint(dbx)
 app.register_blueprint(zot)
 
-from flask import request, render_template
+from flask import request, render_template, abort
 @app.route("/")
 def home():
   return render_template("home.html")
@@ -28,13 +28,13 @@ def authors(metadata):
 from tools import reader, finder
 @app.route("/new-pdf/<path:filename>", methods=["GET"])
 def new_pdf(filename):
-  print("Processing new PDF: " + filename)
+  print("[*] processing new PDF file: " + filename)
   doi = reader.extract_doi_from_file('/' + filename)
   if doi is None:
-    return "No DOI found in the provided file"
+    return "[err] no DOI found in the provided file"
   metadata, bibitem = finder.find_metadata(doi)
   if metadata is None:
-    return "Error while finding metadata"
+    return "[err] error while finding metadata"
 
   return authors(metadata) + " - " + title(metadata) + ".pdf"
 
@@ -42,18 +42,18 @@ def new_pdf(filename):
 def new_citation():
   citation = request.form.get("citation")
   if citation is None:
-    return "No citation"
-  print("Processing new citation: " + citation)
+      abort(403)
+  print("[*] processing new citation:\n\t" + citation)
   doi = finder.find_doi(citation)
   if doi is None:
-    return "No DOI found in the provided free-form citation"
+    return "[err] no DOI found in the provided free-form citation"
   metadata, bibitem = finder.find_metadata(doi)
   if metadata is None:
-    return "Error while finding metadata"
+    return "[err] error while finding metadata"
 
   return bibitem
 
 if __name__ == "__main__":
-  print("Your session key is " + SESSIONKEY)
+  print("[@] Your session key is " + SESSIONKEY)
   print(app.url_map)
   app.run()
