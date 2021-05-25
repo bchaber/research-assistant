@@ -34,12 +34,12 @@ def webhook():
         threading.Thread(target=process_user, args=(account,)).start()
     return ''
 
+from dropbox.files import DeletedMetadata, FolderMetadata
 def process_user(account):
     # OAuth token for the user
     token = db.hget('tokens', account)
     # cursor for the user (None the first time)
     cursor = db.hget('cursors', account)
-
     dropbox = Dropbox(token)
     has_more = True
 
@@ -58,7 +58,7 @@ def process_user(account):
 
             incoming = entry.path_lower
             _, resp = dropbox.files_download(incoming)
-            outgoing = process_pdf(incoming)
+            outgoing = process_pdf(incoming, resp.content)
             dropbox.files_move(incoming, outgoing, autorename=True)
 
         # Update cursor
@@ -73,15 +73,15 @@ def title(metadata):
 def authors(metadata):
   return ' and '.join([author.get("family") + ", " + author.get("given") for author in metadata.get("author", [])[:3]])
 
-def process_pdf(filename):
+import random
+from tools import reader, finder
+def process_pdf(filename, pdfstream):
   print("Processing new PDF: " + filename)
-  doi = reader.extract_doi('/' + filename)
+  doi = reader.extract_doi_from_stream(pdfstream)
   if doi is None:
     return "No DOI found in the provided file"
   metadata, bibitem = finder.find_metadata(doi)
   if metadata is None:
     return "Error while finding metadata"
-  title = metadata.get("title")
-  authors = metadata.get("author")
-
-  return authors(metadata) + " - " + title(metadata) + ".pdf"
+  return "/" + random.choice('abcdef') + ".pdf"
+  #return authors(metadata) + " - " + title(metadata) + ".pdf"
