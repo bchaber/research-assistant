@@ -53,7 +53,8 @@ def process_user(account):
             # Ignore deleted files, folders, and non-markdown files
             if (isinstance(entry, DeletedMetadata) or
                 isinstance(entry, FolderMetadata) or
-                not entry.path_lower.endswith('.pdf')):
+                not entry.path_lower.endswith('.pdf') or
+                not entry.path_lower.startswith('/incoming')):
                 continue
 
             incoming = entry.path_lower
@@ -83,5 +84,5 @@ def process_pdf(filename, pdfstream):
   metadata, bibitem = finder.find_metadata(doi)
   if metadata is None:
     return "Error while finding metadata"
-  return "/" + random.choice('abcdef') + ".pdf"
+  return "/outgoing/" + random.choice('abcdef') + ".pdf"
   #return authors(metadata) + " - " + title(metadata) + ".pdf"
