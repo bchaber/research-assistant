@@ -23,8 +23,8 @@ import threading
 def webhook():
     # Make sure this is a valid request from Dropbox
     signature = request.headers.get('X-Dropbox-Signature')
-    if not hmac.compare_digest(signature, hmac.new(APPSECRET, request.data, sha256).hexdigest()):
-        abort(403)
+    #if not hmac.compare_digest(signature, hmac.new(APPSECRET, request.data, sha256).hexdigest()):
+    #    abort(403)
 
     for account in json.loads(request.data)['list_folder']['accounts']:
         # We need to respond quickly to the webhook request, so we do the
@@ -50,16 +50,17 @@ def process_user(account):
             result = dropbox.files_list_folder_continue(cursor)
 
         for entry in result.entries:
-            # Ignore deleted files, folders, and non-markdown files
+            # Ignore deleted files, folders
             if (isinstance(entry, DeletedMetadata) or
                 isinstance(entry, FolderMetadata) or
-                not entry.path_lower.endswith('.pdf') or
-                not entry.path_lower.startswith('/incoming')):
+                not entry.path_lower.endswith('.pdf')):
+                print("[~] skip " + entry.path_lower)
                 continue
 
             incoming = entry.path_lower
             _, resp = dropbox.files_download(incoming)
             outgoing = process_pdf(incoming, resp.content)
+            print("[>] moving " + incoming + " to " + outgoing)
             dropbox.files_move(incoming, outgoing, autorename=True)
 
         # Update cursor
@@ -77,12 +78,12 @@ def authors(metadata):
 import random
 from tools import reader, finder
 def process_pdf(filename, pdfstream):
-  print("Processing new PDF: " + filename)
+  print("[*] processing " + filename)
   doi = reader.extract_doi_from_stream(pdfstream)
   if doi is None:
-    return "No DOI found in the provided file"
+    return filename
   metadata, bibitem = finder.find_metadata(doi)
   if metadata is None:
-    return "Error while finding metadata"
+    return filename
   return "/outgoing/" + random.choice('abcdef') + ".pdf"
   #return authors(metadata) + " - " + title(metadata) + ".pdf"
