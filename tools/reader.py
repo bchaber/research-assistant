@@ -6,6 +6,8 @@ import fitz
 
 def extract_doi(docs):
   for page in docs:
+    if page.number > 2:
+      break
     txt = page.getText()
     doi = re.search(regex, txt)
     if doi:
