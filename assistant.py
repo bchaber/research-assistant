@@ -29,7 +29,7 @@ from tools import reader, finder
 @app.route("/new-pdf/<path:filename>", methods=["GET"])
 def new_pdf(filename):
   print("Processing new PDF: " + filename)
-  doi = reader.extract_doi('/' + filename)
+  doi = reader.extract_doi_from_file('/' + filename)
   if doi is None:
     return "No DOI found in the provided file"
   metadata, bibitem = finder.find_metadata(doi)
