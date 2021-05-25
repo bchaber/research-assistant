@@ -1,11 +1,11 @@
 #!/bin/bash
-host="http://localhost:5000"
+host="http://127.0.0.1:5000"
 event=$1
-arg=$2
+shift
 
 echo "Send event $event: $arg"
 case $event in
-new-pdf)      curl --location "$host/new-pdf/$arg";;
-new-citation) curl --data "citation=$arg" "$host/new-citation";;
+new-pdf) curl --location "$host/new-pdf/`python3 urlencode $*`";;
+new-citation) curl --data "citation=$1" "$host/new-citation";;
 *) echo "Unknown event "$event", try: new-pdf, new-citation";;
 esac
