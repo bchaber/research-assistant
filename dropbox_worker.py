@@ -16,6 +16,7 @@ def parse_pdf_file(incoming):
   doi = reader.extract_doi_from_file(incoming)
   if doi is None:
     return "[err] no DOI found in the provided stream"
+  print("[*] finding metadata for DOI: " + doi)
   metadata, bibitem = finder.find_metadata(doi)
   if metadata is None:
     return "[err] error while finding metadata"
@@ -28,10 +29,11 @@ def parse_pdf_file(incoming):
   #  print("[_] no change for " + incoming)
   
 def parse_pdf_stream(incoming, content, dropbox):
-  print("[*] processing new PDF stream: " + incoming)
+  print("[*] extracting DOI from PDF stream: " + incoming)
   doi = reader.extract_doi_from_stream(content)
   if doi is None:
     return "[err] no DOI found in the provided stream"
+  print("[*] finding metadata for DOI: " + doi)
   metadata, bibitem = finder.find_metadata(doi)
   if metadata is None:
     return "[err] error while finding metadata"
@@ -51,7 +53,7 @@ def add_pdf(metadata, dropbox):
   print("[v] adding " + outgoing)
   doi = metadata.get("DOI")
   if doi:
-    print("[v] fetching a PDF for " + doi)
+    print("[v] fetching a PDF for DOI: " + doi)
     content = scihub.fetch_pdf(doi)
     #dropbox.files_upload(content, outgoing)
     with open(outgoing, "wb") as f:
@@ -63,10 +65,11 @@ def add_bibitem(bibitem):
   pass
 
 def parse_citation(citation):
-  print("[*] processing new citation:\n\t" + citation)
+  print("[*] finding DOI for new citation:\n\t" + citation)
   doi = finder.find_doi(citation)
   if doi is None:
     return "[err] no DOI found in the provided free-form citation"
+  print("[*] finding metadata for DOI: " + doi)
   metadata, bibitem = finder.find_metadata(doi)
   if metadata is None:
     return "[err] error while finding metadata"
