@@ -39,7 +39,7 @@ def webhook():
 from dropbox.files import DeletedMetadata, FolderMetadata
 def process_user(account):
     token = db.hget('tokens', account).decode()
-    cursor = None #db.hget('cursors', account).decode()
+    cursor = db.hget('cursors', account).decode()
     dropbox = Dropbox(token)
     has_more = True
 
