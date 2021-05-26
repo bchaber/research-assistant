@@ -6,7 +6,8 @@ from flask import Blueprint, Response
 from flask import request, abort
 
 import os, json, threading
-DBXSECRET = os.getenv("DBXSECRET").encode()
+DBXACCOUNT = os.getenv("DBXACCOUNT")
+DBXSECRET = os.getenv("DBXSECRET")
 DBXINCOMING  = os.getenv("DBXINCOMING")
 
 dbx = Blueprint("dropbox", __name__, template_folder="templates")
@@ -24,7 +25,7 @@ import threading
 def webhook():
     # Make sure this is a valid request from Dropbox
     signature = request.headers.get('X-Dropbox-Signature')
-    if not hmac.compare_digest(signature, hmac.new(DBXSECRET, request.data, sha256).hexdigest()):
+    if not hmac.compare_digest(signature, hmac.new(DBXSECRET.encode(), request.data, sha256).hexdigest()):
         abort(403)
 
     for account in json.loads(request.data)['list_folder']['accounts']:
@@ -41,7 +42,7 @@ def cite():
     if citation is None:
       abort(403)
     
-    account  = "dbid:AACKI9pQH75rB18ja_wjOihTIW6uIuXVizU"
+    account  = DBXACCOUNT
     threading.Thread(target=process_citation, args=(account, citation)).start()
     return ''
 
