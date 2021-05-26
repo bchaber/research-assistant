@@ -13,11 +13,15 @@ def fetch_pdf(doi):
 
   soup = BeautifulSoup(response.content, "lxml")
   iframe = soup.find("iframe", attrs={"id":"pdf"})
-  mirror = iframe["src"].split("#")[0]
-  if mirror.startswith("//"):
-    mirror = "https:" + mirror
+  if iframe is None:
+    print("[!] Couldn't find iframe in the Sci-hub's response")
+    return None
 
-  document = get(mirror)
+  link = iframe["src"].split("#")[0]
+  if link.startswith("//"):
+    link = "https:" + link
+
+  document = get(link)
   if document.headers["content-type"] != "application/pdf":
     print("[!] Invalid content type: " + document.headers["content-type"])
     return None

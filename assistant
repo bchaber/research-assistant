@@ -1,0 +1,30 @@
+#!env python3
+
+from local_worker import new_pdf, new_citation
+from sys import argv, exit
+if __name__ == '__main__':
+  if len(argv) < 2:
+    print("[!] No command provided.")
+    exit(1)
+
+  cmd = argv[1]
+  if cmd == 'new-pdf':
+    if len(argv) < 3:
+      print("[!] No PDF file path provided.")
+      exit(1)
+
+    incoming = argv[2]
+    new_pdf(incoming)
+    exit(0)
+
+  if cmd == 'new-citation':
+    if len(argv) < 3:
+      print("[!] No citation provided.")
+      exit(2)
+
+    citation = argv[2]
+    new_citation(citation)
+    exit(0)
+
+  print("[!] Invalid command: " + cmd)
+  exit(3)

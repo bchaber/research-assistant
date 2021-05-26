@@ -4,13 +4,17 @@ def find_metadata(doi):
   response = requests.get(f"http://dx.doi.org/{doi}",
                           headers={"Accept": "application/json"})
   if response.status_code != 200:
-    return None
+    print("[!] Invalid response code " + str(response.status_code) + ": ")
+    print(response.content)
+    return None, None
   metadata = json.loads(response.text)
 
   response = requests.get(f"http://dx.doi.org/{doi}",
                           headers={"Accept": "application/x-bibtex"})
   if response.status_code != 200:
-    return None
+    print("[!] Invalid response code " + str(response.status_code) + ": ")
+    print(response.content)
+    return None, None
 
   return metadata, response.text
 
@@ -19,10 +23,13 @@ def find_doi(citation):
   citation = quote(citation)
   response = requests.get(f"https://api.crossref.org/works?query.bibliographic={citation}&rows=1")
   if response.status_code != 200:
+    print("[!] Invalid response code " + str(response.status_code) + ": ")
+    print(response.content)
     return None
   
   results = json.loads(response.text)
   if results.get('status') != 'ok':
+    print("[!] Invalid status " + results.get('status'))
     return None
 
   for item in results['message']['items']:

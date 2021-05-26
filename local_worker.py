@@ -1,9 +1,10 @@
 from dotenv import load_dotenv
 load_dotenv()
 
-from rq import Queue, Worker, Connection
-from database import db
-queue = Queue(connection=db)
+import os
+PDFOUTGOING  = os.getenv("PDFOUTGOING")
+
+from tools import reader, finder, scihub
 
 def title(metadata):
   return metadata.get("title", "")
@@ -12,61 +13,34 @@ def authors(metadata):
   return ' and '.join([author.get("family") + ', ' + author.get("given")
   	for author in metadata.get("author", [])[:3]])
 
-from tools import reader, finder
-def parse_pdf_file(incoming):
-  print("[*] processing new PDF file: " + incoming)
+def new_pdf(incoming):
+  print("[*] extracting DOI from PDF file: " + incoming)
   doi = reader.extract_doi_from_file(incoming)
   if doi is None:
-    return "[err] no DOI found in the provided stream"
+    return "[err] no DOI found in the provided file"
+  print("[*] finding metadata for DOI: " + doi)
   metadata, bibitem = finder.find_metadata(doi)
   if metadata is None:
     return "[err] error while finding metadata"
 
-  outgoing = '/outgoing/' + title(metadata) + " - " + authors(metadata) + ".pdf"
-  print("[*] should move " + incoming + " to " + outgoing)
+  outgoing = PDFOUTGOING + "/" + title(metadata) + " - " + authors(metadata) + ".pdf"
   if incoming != outgoing:
-  	queue.enqueue("__main__.move_pdf", args=(incoming, outgoing))
-  else:
-    print("[_] no change for " + incoming)
-  
-def parse_pdf_stream(incoming, content):
-  print("[*] processing new PDF stream: " + incoming)
-  doi = reader.extract_doi_from_stream(content)
-  if doi is None:
-    return "[err] no DOI found in the provided stream"
-  metadata, bibitem = finder.find_metadata(doi)
-  if metadata is None:
-    return "[err] error while finding metadata"
+    print("[>] moving " + incoming + " to " + outgoing)
+    os.rename(incoming, outgoing)
 
-  outgoing = '/outgoing/' + title(metadata) + " - " + authors(metadata) + ".pdf"
-  if incoming != outgoing:
-  	queue.enqueue("__main__.move_pdf", args=(incoming, outgoing))
-  else:
-    print("[_] no change for " + incoming)
-
-def move_pdf(incoming, outgoing):
-  print("[>] moving " + incoming + " to " + outgoing)
-  os.rename(incoming, outgoing)
-
-def add_pdf(newname, content):
-  print("[x] would have add a PDF")
-  pass
-
-def add_bibitem(bibitem):
-  print("[x] would have add bibitem")
-  pass
-
-def parse_citation(citation):
-  print("[*] processing new citation:\n\t" + citation)
+def new_citation(citation):
+  print("[*] finding DOI for new citation:\n> " + citation)
   doi = finder.find_doi(citation)
   if doi is None:
     return "[err] no DOI found in the provided free-form citation"
+  print("[*] finding metadata for DOI: " + doi)
   metadata, bibitem = finder.find_metadata(doi)
   if metadata is None:
     return "[err] error while finding metadata"
-  queue.enqueue("__main__.add_bibitem", args=(bibitem,))
-
-if __name__ == "__main__":
-  with Connection(db):
-    worker = Worker(queue)
-    worker.work()
+  outgoing = PDFOUTGOING + "/" + title(metadata) + " - " + authors(metadata) + ".pdf"
+  doi = metadata["DOI"]
+  print("[v] fetching a PDF for DOI: " + doi)
+  content = scihub.fetch_pdf(doi)
+  print("[^] uploading the PDF to Dropbox: " + outgoing)
+  with open(outgoing, "wb") as f:
+    f.write(content)

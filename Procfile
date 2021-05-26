@@ -1,2 +1,1 @@
-web: gunicorn assistant:app
-worker: python3 -u dropbox_worker.py
+web: gunicorn web-assistant:app
