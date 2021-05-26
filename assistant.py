@@ -24,7 +24,7 @@ from urllib.parse import quote, unquote
 @app.route("/new-pdf/<path:filename>", methods=["GET"])
 def new_pdf(filename):
   job = queue.enqueue("__main__.parse_pdf_file", '/' + unquote(filename))
-  return job.get_status()
+  return job.id
 
 @app.route("/new-citation", methods=["POST"])
 def new_citation():
@@ -32,7 +32,7 @@ def new_citation():
   if citation is None:
     abort(403)
   job = queue.enqueue("__main__.parse_citation", args=(citation,))
-  return job.get_status()
+  return job.id
 
 if __name__ == "__main__":
   print("[@] Your session key is " + SESSIONKEY)
