@@ -9,7 +9,7 @@ DBXOUTGOING  = os.getenv("DBXOUTGOING")
 from database import db
 from local_worker import title, authors
 from tools import reader, finder, scihub
-
+import zotero_worker as zotero
 def new_pdf(incoming, dropbox):
   print("[*] downloading " + incoming + " from Dropbox")
   _, f = dropbox.files_download(incoming)
@@ -21,11 +21,12 @@ def new_pdf(incoming, dropbox):
   metadata, bibitem = finder.find_metadata(doi)
   if metadata is None:
     return "[err] error while finding metadata"
-
+  
   outgoing = DBXOUTGOING + "/" + title(metadata) + " - " + authors(metadata) + ".pdf"
   if incoming != outgoing:
     print("[>] moving " + incoming + " to " + outgoing)
     dropbox.files_move(incoming, outgoing, autorename=True)
+  zotero.save_bibitem(metadata)
 
 def new_citation(citation, dropbox):
   print("[*] finding DOI for new citation:\n> " + citation)
@@ -42,3 +43,4 @@ def new_citation(citation, dropbox):
   content = scihub.fetch_pdf(doi)
   print("[^] uploading the PDF to Dropbox: " + outgoing)
   dropbox.files_upload(content, outgoing)
+  zotero.save_bibitem(metadata)

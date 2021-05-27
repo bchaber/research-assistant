@@ -3,9 +3,10 @@ from dotenv import load_dotenv
 load_dotenv()
 
 import os
-SESSIONKEY  = os.getenv("SESSIONKEY")
-
+SESSIONKEY = os.getenv("SESSIONKEY")
+SECRETKEY  = os.getenv("SECRETKEY")
 app = Flask(__name__)
+app.secret_key = SECRETKEY
 
 from rq import Queue
 from database import db
@@ -23,24 +24,24 @@ def home():
 
 if __name__ == "__main__":
   print("[@] Your session key is " + SESSIONKEY)
-  if not ZOTAPIKEY:
+  if not os.getenv("ZOTAPIKEY"):
     print("[?] Unknown value of ZOTAPIKEY")
-  if not ZOTUSERID:
+  if not os.getenv("ZOTUSERID"):
     print("[?] Unknown value of ZOTUSERID")
-  if not ZOTGROUP:
+  if not os.getenv("ZOTGROUP"):
     print("[?] Unknown value of ZOTGROUP")
-  if not DBXACCOUNT:
+  if not os.getenv("DBXACCOUNT"):
     print("[?] Unknown value of DBXACCOUNT")
-  if not DBXSECRET:
+  if not os.getenv("DBXSECRET"):
     print("[?] Unknown value of DBXSECRET")
-  if not DBXINCOMING:
+  if not os.getenv("DBXINCOMING"):
     print("[?] Unknown value of DBXINCOMING")
-  if not DBXOUTGOING:
+  if not os.getenv("DBXOUTGOING"):
     print("[?] Unknown value of DBXOUTGOING")
-  if not REDISHOST:
+  if not os.getenv("REDISHOST"):
     print("[?] Unknown value of REDISHOST")
-  if not REDISPORT:
+  if not os.getenv("REDISPORT"):
     print("[?] Unknown value of REDISPORT")
-  if not REDISAUTH:
+  if not os.getenv("REDISAUTH"):
     print("[?] Unknown value of REDISAUTH")
   app.run()

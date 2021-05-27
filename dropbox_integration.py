@@ -3,12 +3,12 @@ from database import db
 # Based on an example from https://www.dropbox.com/developers/reference/webhooks
 from dropbox import Dropbox
 from flask import Blueprint, Response
-from flask import request, abort
+from flask import request, abort, flash, redirect
 
 import os, json, threading
 DBXACCOUNT = os.getenv("DBXACCOUNT")
-DBXSECRET = os.getenv("DBXSECRET")
-DBXINCOMING  = os.getenv("DBXINCOMING")
+DBXSECRET  = os.getenv("DBXSECRET")
+DBXINCOMING= os.getenv("DBXINCOMING")
 
 dbx = Blueprint("dropbox", __name__, template_folder="templates")
 @dbx.route('/webhook', methods=['GET'])
@@ -41,10 +41,11 @@ def cite():
     citation = request.form.get("citation")
     if citation is None:
       abort(403)
-    
+    citation = citation.strip()
     account  = DBXACCOUNT
     threading.Thread(target=process_citation, args=(account, citation)).start()
-    return ''
+    flash('I am on it!')
+    return redirect('/')
 
 from dropbox.files import DeletedMetadata, FolderMetadata
 from dropbox_worker import new_pdf, new_citation
@@ -81,4 +82,3 @@ def process_citation(account, citation):
     cursor = db.hget('cursors', account).decode()
     dropbox = Dropbox(token)
     metadata = new_citation(citation, dropbox)
-    requests.post()

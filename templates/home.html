@@ -5,10 +5,27 @@
     <style>
       ul li { list-style: none; }
       textarea { resize: none; }
+      ul.ra li { color: #fff; background-color: #3c3c3c; padding: 5px; }
+      ul.me li { color: #000; background-color: #f0f0f0; padding: 5px; }
     </style>
   <form action="/cite" method="POST">
-  <ul>
+  
+  <ul class="ra">
+  <li>Hello, it's your personal Research Assistant</li>
+  </ul>
+  
+  <ul class="me">
   <li><textarea placeholder="A paper cited as..." cols="48" rows="3" name="citation"></textarea></li>
   <li><input type="submit" value="Find me, please"></li>
   </ul>
+  
+  {% with messages = get_flashed_messages() %}
+  {% if messages %}
+  <ul class="ra">
+  {% for message in messages %}
+    <li>{{ message }}</li>
+  {% endfor %}
+  </ul>
+  {% endif %}
+  {% endwith %}
 
