@@ -9,6 +9,12 @@ import os, json, threading
 DBXACCOUNT = os.getenv("DBXACCOUNT")
 DBXSECRET = os.getenv("DBXSECRET")
 DBXINCOMING  = os.getenv("DBXINCOMING")
+if not DBXACCOUNT:
+  print("[?] Unknown value of DBXACCOUNT")
+if not DBXSECRET:
+  print("[?] Unknown value of DBXSECRET")
+if not DBXINCOMING:
+  print("[?] Unknown value of DBXINCOMING")
 
 dbx = Blueprint("dropbox", __name__, template_folder="templates")
 @dbx.route('/webhook', methods=['GET'])
@@ -50,7 +56,7 @@ from dropbox.files import DeletedMetadata, FolderMetadata
 from dropbox_worker import new_pdf, new_citation
 def process_pdfs(account):
     token = db.hget('tokens', account).decode()
-    cursor = None#db.hget('cursors', account).decode()
+    cursor = db.hget('cursors', account).decode()
     dropbox = Dropbox(token)
     has_more = True
 
@@ -80,4 +86,5 @@ def process_citation(account, citation):
     token = db.hget('tokens', account).decode()
     cursor = db.hget('cursors', account).decode()
     dropbox = Dropbox(token)
-    new_citation(citation, dropbox)
+    metadata = new_citation(citation, dropbox)
+    requests.post()

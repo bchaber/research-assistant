@@ -23,5 +23,4 @@ def home():
 
 if __name__ == "__main__":
   print("[@] Your session key is " + SESSIONKEY)
-  print(app.url_map)
   app.run()
