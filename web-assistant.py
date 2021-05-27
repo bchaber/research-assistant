@@ -23,6 +23,10 @@ def home():
   return render_template("home.html")
 
 if __name__ == "__main__":
+  if not os.getenv("SESSIONKEY"):
+    print("[?] Unknown value of SESSIONKEY")
+  if not os.getenv("SECRETKEY"):
+    print("[?] Unknown value of SECRETKEY")
   print("[@] Your session key is " + SESSIONKEY)
   if not os.getenv("ZOTAPIKEY"):
     print("[?] Unknown value of ZOTAPIKEY")
