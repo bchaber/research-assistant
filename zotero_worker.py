@@ -22,25 +22,26 @@ def save_bibitem(metadata):
 
 def update_authors(item, json):
   item['creators'] = []
-  for author in json['author']:
+  for author in json.get('author', []):
     item['creators'].append({
     	'creatorType':'author', 
-        'firstName': author['given'],
-        'lastName': author['family']})
+        'firstName': author.get('given'),
+        'lastName': author.get('family')
+        })
 
 def update_article(item, json):
   update_authors(item, json)
-  item['title'] = json['title']
-  item['volume']= json['volume']
-  item['issue'] = json['issue']
-  item['pages'] = json['page']
-  item['DOI']   = json['DOI']
-  item['language'] = json['language']
-  item['publicationTitle'] = json['publisher']
+  item['title'] = json.get('title')
+  item['volume']= json.get('volume')
+  item['issue'] = json.get('issue')
+  item['pages'] = json.get('page')
+  item['DOI']   = json.get('DOI')
+  item['language'] = json.get('language')
+  item['publicationTitle'] = json.get('publisher')
 
 def update_conference(item, json):
   update_authors(item, json)
-  item['title'] = json['title']
-  item['DOI']   = json['DOI']
-  item['publisher'] = json['publisher']
-  item['conferenceName'] = json['event']
+  item['title'] = json.get('title')
+  item['DOI']   = json.get('DOI')
+  item['publisher'] = json.get('publisher')
+  item['conferenceName'] = json.get('event')
