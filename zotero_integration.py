@@ -6,12 +6,6 @@ import os
 ZOTAPIKEY = os.getenv("ZOTAPIKEY")
 ZOTUSERID = os.getenv("ZOTUSERID")
 ZOTGROUP  = os.getenv("ZOTGROUP")
-if not ZOTAPIKEY:
-  print("[?] Unknown value of ZOTAPIKEY")
-if not ZOTUSERID:
-  print("[?] Unknown value of ZOTUSERID")
-if not ZOTGROUP:
-  print("[?] Unknown value of ZOTGROUP")
 
 zot = Blueprint("zotero", __name__, template_folder="templates")
 

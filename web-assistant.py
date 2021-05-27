@@ -23,4 +23,24 @@ def home():
 
 if __name__ == "__main__":
   print("[@] Your session key is " + SESSIONKEY)
+  if not ZOTAPIKEY:
+    print("[?] Unknown value of ZOTAPIKEY")
+  if not ZOTUSERID:
+    print("[?] Unknown value of ZOTUSERID")
+  if not ZOTGROUP:
+    print("[?] Unknown value of ZOTGROUP")
+  if not DBXACCOUNT:
+    print("[?] Unknown value of DBXACCOUNT")
+  if not DBXSECRET:
+    print("[?] Unknown value of DBXSECRET")
+  if not DBXINCOMING:
+    print("[?] Unknown value of DBXINCOMING")
+  if not DBXOUTGOING:
+    print("[?] Unknown value of DBXOUTGOING")
+  if not REDISHOST:
+    print("[?] Unknown value of REDISHOST")
+  if not REDISPORT:
+    print("[?] Unknown value of REDISPORT")
+  if not REDISAUTH:
+    print("[?] Unknown value of REDISAUTH")
   app.run()

@@ -5,8 +5,6 @@ load_dotenv()
 
 import os
 DBXOUTGOING  = os.getenv("DBXOUTGOING")
-if not DBXOUTGOING:
-  print("[?] Unknown value of DBXOUTGOING")
 
 from database import db
 from local_worker import title, authors

@@ -9,12 +9,6 @@ import os, json, threading
 DBXACCOUNT = os.getenv("DBXACCOUNT")
 DBXSECRET = os.getenv("DBXSECRET")
 DBXINCOMING  = os.getenv("DBXINCOMING")
-if not DBXACCOUNT:
-  print("[?] Unknown value of DBXACCOUNT")
-if not DBXSECRET:
-  print("[?] Unknown value of DBXSECRET")
-if not DBXINCOMING:
-  print("[?] Unknown value of DBXINCOMING")
 
 dbx = Blueprint("dropbox", __name__, template_folder="templates")
 @dbx.route('/webhook', methods=['GET'])
