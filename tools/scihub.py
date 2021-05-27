@@ -7,7 +7,7 @@ SCIHUB_URL = "https://sci-hub.se/"
 def fetch_pdf(doi):
   response = get(SCIHUB_URL + doi)
   if response.status_code != 200:
-    print("[!] Invalid response code " + response.status_code + ":")
+    print("[!] Invalid response code " + str(response.status_code) + ":")
     print(response.content)
     return None
 
