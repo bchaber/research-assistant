@@ -4,7 +4,7 @@ load_dotenv()
 import os
 PDFOUTGOING  = os.getenv("PDFOUTGOING")
 if not PDFOUTGOING:
-  print("[?] Unknown value of PDFOUTGOING")
+  print("[?] Unknown value of PDFOUTGOING in " + __name__)
 
 from tools import reader, finder, scihub
 
