@@ -7,14 +7,14 @@ SCIHUB_URL = "https://sci-hub.se/"
 def fetch_pdf(doi):
   response = get(SCIHUB_URL + doi)
   if response.status_code != 200:
-    print("[!] Invalid response code " + str(response.status_code) + ":")
+    print("[!] invalid response code " + str(response.status_code) + ":")
     print(response.content)
     return None
 
   soup = BeautifulSoup(response.content, "lxml")
   iframe = soup.find("iframe", attrs={"id":"pdf"})
   if iframe is None:
-    print("[!] Couldn't find iframe in the Sci-hub's response")
+    print("[!] couldn't find iframe in the Sci-hub's response")
     return None
 
   link = iframe["src"].split("#")[0]
@@ -23,7 +23,7 @@ def fetch_pdf(doi):
 
   document = get(link)
   if document.headers["content-type"] != "application/pdf":
-    print("[!] Invalid content type: " + document.headers["content-type"])
+    print("[!] invalid content type: " + document.headers["content-type"])
     return None
 
   return document.content

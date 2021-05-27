@@ -17,7 +17,7 @@ def save_bibitem(metadata):
     update_conference(template, metadata)
 
   if template:
-    print("[>] Saving " + metadata['type'] + " to Zotero group #" + ZOTGROUP)
+    print("[>] saving " + metadata['type'] + " to Zotero group #" + ZOTGROUP)
     zotero.create_items([template])
 
 def update_authors(item, json):
